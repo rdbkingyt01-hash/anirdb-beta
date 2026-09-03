@@ -433,7 +433,7 @@ img{max-width:100%;display:block;}
 .comments-sheet .comments-list{min-height:0;}
 .comments-sheet .comment-composer{padding-bottom:env(safe-area-inset-bottom);}
 .comments-sheet{transition:margin-bottom .16s ease;}
-.comments-overlay.keyboard-open .comments-sheet{margin-bottom:var(--keyboard-offset,0px);}
+#commentsOverlay.keyboard-open .comments-sheet{margin-bottom:var(--keyboard-offset,0px);}
 .comment-icon{display:inline-flex;align-items:center;justify-content:center;}
 .comment-icon svg{width:21px;height:21px;}
 .comment-btn{gap:7px!important;}
@@ -518,6 +518,68 @@ img{max-width:100%;display:block;}
 
 @media (max-width:480px){
   .app{max-width:100%;}
+}
+
+/* ---------- Desktop web view ---------- */
+@media (min-width:768px){
+  body{background:#e8efec;overflow-y:auto;}
+  #appScreen.app{
+    max-width:1180px;
+    min-height:100vh;
+    box-shadow:0 0 38px rgba(10,15,13,.1);
+  }
+  #appScreen .topbar{padding:22px 40px 10px;}
+  #appScreen #feedView > .tabs,
+  #appScreen #feedView > .section-label,
+  #appScreen #feedView > .feed-filter-row{
+    width:min(calc(100% - 48px),820px);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  #appScreen .feed-scroll{
+    width:min(calc(100% - 48px),820px);
+    margin-left:auto;
+    margin-right:auto;
+    overflow-y:visible;
+    scrollbar-width:auto;
+  }
+  #appScreen .feed-scroll::-webkit-scrollbar{display:block;width:auto;height:auto;}
+  #appScreen .post-card{margin-left:0;margin-right:0;}
+  #appScreen .settings-hero,
+  #appScreen .profile-top,
+  #appScreen .profile-hero,
+  #appScreen #profilePosts,
+  #appScreen #savedPostsList,
+  #appScreen #recentPostsList{
+    width:min(calc(100% - 48px),820px);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  #appScreen .settings-group{max-width:760px;margin-left:auto;margin-right:auto;}
+  #appScreen .bottomnav{
+    max-width:1180px;
+    padding-left:40px;
+    padding-right:40px;
+  }
+  /* Full-page sheets (compose, edit profile, notifications, premium, search)
+     stretch edge-to-edge by design for phones. On a wide desktop window that
+     reads as a giant blank form, so present them as a centered floating card
+     instead - same content, just framed for a bigger screen. */
+  #authScreen.app{
+    max-width:400px;min-height:0;margin:56px auto;
+    box-shadow:0 20px 60px rgba(10,15,13,.18);border-radius:20px;overflow:hidden;
+  }
+  .overlay.page-overlay,
+  .overlay.search-overlay{
+    align-items:center;padding:32px 20px;
+  }
+  .page-overlay .sheet,
+  .search-overlay .sheet{
+    width:100%;max-width:600px;height:auto;min-height:0;max-height:86vh;
+    border-radius:22px;box-shadow:0 20px 60px rgba(10,15,13,.28);
+  }
+  #commentsOverlay .comments-sheet{max-width:600px;width:100%;}
+  .overlay.center .sheet{max-width:430px;}
 }
 
 </style>
@@ -750,7 +812,8 @@ img{max-width:100%;display:block;}
       <button class="iconbtn" id="recentBack" aria-label="Back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <div class="namewrap" style="margin-left:6px;font-size:15px;" data-i18n="recentTitle">Recently viewed</div>
+      <div class="namewrap" style="margin-left:6px;font-size:15px;flex:1;" data-i18n="recentTitle">Recently viewed</div>
+      <button class="iconbtn" id="recentClearBtn" data-i18n="clearRecent" aria-label="Clear" style="width:auto;height:auto;border-radius:14px;padding:6px 12px;font-size:12px;font-weight:600;">Clear</button>
     </div>
     <div class="feed-scroll saved-posts-list" id="recentPostsList"></div>
   </div>
@@ -1286,7 +1349,7 @@ const I18N = {
     signupHint: "At least 8 characters. Your password is stored securely, encrypted.",
      tabDiscover: "Discover", tabFollowing: "Subscriptions", tabMovies: "Movies", tabSeries: "Series",
       recentPosts: "Recent Posts", filterLabel: "Filter", filterAll: "All", filterVideo: "Video", filterImage: "Image", filterPopular: "Popular", filterSaved: "Saved", filterUnread: "Unread",
-     menuRecent: "Recently viewed", recentTitle: "Recently viewed",
+     menuRecent: "Recently viewed", recentTitle: "Recently viewed", clearRecent: "Clear",
      cropSquareLabel: "Crop photos to square", cropSquareHint: "Photos are compressed before upload",
     btnEdit: "Edit", btnSave: "Save",
     statPosts: "Posts", statSubscribers: "Subscribers", statFollowing: "Subscribing",
@@ -1380,7 +1443,7 @@ const I18N = {
     signupHint: "কমপক্ষে ৮ অক্ষর। পাসওয়ার্ড এনক্রিপ্টেড অবস্থায় নিরাপদে সংরক্ষণ করা হয়।",
      tabDiscover: "ডিসকভার", tabFollowing: "সাবস্ক্রাইব ফিড", tabMovies: "মুভি", tabSeries: "সিরিজ",
       recentPosts: "সাম্প্রতিক পোস্ট", filterLabel: "ফিল্টার", filterAll: "সব", filterVideo: "ভিডিও", filterImage: "ছবি", filterPopular: "জনপ্রিয়", filterSaved: "সেভ করা", filterUnread: "না-পড়া",
-     menuRecent: "সাম্প্রতিক দেখা", recentTitle: "সাম্প্রতিক দেখা",
+     menuRecent: "সাম্প্রতিক দেখা", recentTitle: "সাম্প্রতিক দেখা", clearRecent: "মুছুন",
      cropSquareLabel: "ছবি স্কোয়ার করে কাটুন", cropSquareHint: "আপলোডের আগে ছবি compress হবে",
     btnEdit: "সম্পাদনা", btnSave: "সংরক্ষণ করুন",
     statPosts: "পোস্ট", statSubscribers: "সাবস্ক্রাইবার", statFollowing: "সাবস্ক্রাইবিং",
@@ -1904,7 +1967,7 @@ function playPremiumItem() {
   if (!embedUrl) return;
   const iframe = document.createElement("iframe");
   const provider = parsed?.provider || (embedUrl.includes("player.vimeo.com") ? "vimeo" : "");
-  iframe.src = `${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1&muted=0&playsinline=1&controls=1&title=0&byline=0&portrait=0&dnt=1`;
+  iframe.src = `${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1&muted=1&playsinline=1&controls=1&title=0&byline=0&portrait=0&dnt=1`;
   iframe.title = item.title || "Premium video";
   iframe.allow = "autoplay; fullscreen; picture-in-picture; encrypted-media";
   iframe.allowFullscreen = true;
@@ -1917,9 +1980,17 @@ function playPremiumItem() {
       const player = new Vimeo.Player(iframe);
       iframe._vimeoPlayer = player;
       player.ready().then(async () => {
-        await player.setMuted(false);
-        await player.setVolume(1);
-        await player.play();
+        try {
+          await player.setMuted(false);
+          await player.setVolume(1);
+          await player.play();
+        } catch {
+          // Unmuted autoplay was rejected (common in APK/WebView wrappers)
+          // — fall back to muted so the video at least starts. Vimeo's
+          // native controls remain enabled, so the user can unmute from
+          // the player's own UI.
+          try { await player.setMuted(true); await player.play(); } catch {}
+        }
       }).catch(() => {
         // Vimeo's native controls remain enabled, so the user can start it
         // manually if the browser blocks autoplay with sound.
@@ -2302,6 +2373,7 @@ function showVideoControls(wrapper) {
 }
 
 function updateVideoProgressUI(wrapper, current, duration) {
+  wrapper.dataset.currentTime = String(current || 0);
   if (wrapper.dataset.seeking === "1") return;
   const { fill, thumb, time } = videoControlEls(wrapper);
   const pct = duration > 0 ? Math.min(100, Math.max(0, (current / duration) * 100)) : 0;
@@ -2381,15 +2453,51 @@ function seekWrapperTo(wrapper, seconds) {
 function toggleMute(wrapper) {
   const provider = wrapper.dataset.provider || "";
   const nextMuted = !wrapper.classList.contains("is-muted");
-  if (provider === "youtube") {
-    if (nextMuted) wrapper._player?.mute?.(); else wrapper._player?.unMute?.();
-  } else if (provider === "vimeo") {
-    const mutePromise = wrapper._player?.setMuted?.(nextMuted);
-    mutePromise?.catch?.(() => {});
-    if (!nextMuted) wrapper._player?.setVolume?.(1)?.catch?.(() => {});
+  if (nextMuted) {
+    // Muting is never blocked by autoplay/gesture policies - just tell the
+    // existing player to go quiet.
+    if (provider === "youtube") wrapper._player?.mute?.();
+    else if (provider === "vimeo") wrapper._player?.setMuted?.(true)?.catch?.(() => {});
+    wrapper.classList.toggle("is-muted", true);
+    showVideoControls(wrapper);
+    return;
   }
-  wrapper.classList.toggle("is-muted", nextMuted);
+  // Turning sound ON. In some Android WebView-wrapped APKs, a postMessage
+  // call into the provider's *existing* iframe (setMuted/unMute) doesn't
+  // carry this tap's user-activation across the frame boundary, so the
+  // request gets silently ignored even though the tap itself is a genuine,
+  // direct user gesture. Rebuilding the iframe with sound requested in its
+  // own src - done synchronously, right here inside the click handler - is
+  // the strongest signal a WebView can get that a person just asked for
+  // audible playback. Playback resumes from roughly where it left off.
+  wrapper.classList.toggle("is-muted", false);
   showVideoControls(wrapper);
+  reloadVideoUnmuted(wrapper);
+}
+
+function reloadVideoUnmuted(wrapper) {
+  const provider = wrapper.dataset.provider || "";
+  const src = wrapper.dataset.embed;
+  if (!src || !wrapper.classList.contains("is-loaded")) return;
+  const startAt = Math.max(0, Number(wrapper.dataset.currentTime) || 0);
+  if (wrapper._pollTimer) { clearInterval(wrapper._pollTimer); wrapper._pollTimer = null; }
+  try { wrapper._player?.destroy?.(); } catch {}
+  wrapper._player = null;
+  wrapper.querySelectorAll("iframe").forEach(f => f.remove());
+  const iframe = document.createElement("iframe");
+  const originParam = location.origin && location.origin !== "null"
+    ? `&origin=${encodeURIComponent(location.origin)}`
+    : "";
+  iframe.src = provider === "youtube"
+    ? `${src}${src.includes("?") ? "&" : "?"}enablejsapi=1&autoplay=1&mute=0&playsinline=1&controls=0&disablekb=1&fs=0&rel=0&modestbranding=1&start=${Math.floor(startAt)}${originParam}`
+    : `${src}${src.includes("?") ? "&" : "?"}api=1&autoplay=1&muted=0&playsinline=1&controls=0&title=0&byline=0&portrait=0#t=${startAt}s`;
+  iframe.title = "Video";
+  iframe.loading = "eager";
+  iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
+  iframe.allowFullscreen = true;
+  wrapper.insertBefore(iframe, wrapper.querySelector(".post-video-duration-badge"));
+  if (provider === "youtube") attachYouTubePlayer(wrapper, iframe);
+  else if (provider === "vimeo") attachVimeoPlayer(wrapper, iframe);
 }
 
 async function toggleVideoFullscreen(wrapper) {
@@ -2468,10 +2576,27 @@ function attachYouTubePlayer(wrapper, iframe) {
            // The player is created from a user's tap on the thumbnail, so
            // start with sound. The old forced mute made every YouTube post
            // silent even when the device allowed audio playback.
-           e.target.unMute();
-           e.target.setVolume(100);
+           if (!wrapper.classList.contains("is-muted")) {
+             e.target.unMute();
+             e.target.setVolume(100);
+           }
            startPoll();
           e.target.playVideo();
+          // The YouTube iframe API doesn't reject on blocked unmuted
+          // autoplay the way Vimeo's does — playback just silently stays
+          // muted if the WebView's policy blocks sound. Detect that and
+          // reflect it in our own mute button instead of leaving it out of
+          // sync with what's actually audible.
+          setTimeout(() => {
+            if (wrapper._player !== e.target) return;
+            try {
+              if (e.target.isMuted() && !wrapper.classList.contains("is-muted")) {
+                wrapper.classList.add("is-muted");
+                const muteBtn = videoControlEls(wrapper).muteBtn;
+                if (muteBtn) muteBtn.setAttribute("aria-label", "Unmute video");
+              }
+            } catch {}
+          }, 800);
         },
         onStateChange: (e) => {
           if (e.data === YT.PlayerState.PLAYING) {
@@ -2511,10 +2636,29 @@ function attachVimeoPlayer(wrapper, iframe) {
     player.ready().then(async () => {
       if (wrapper._player !== player || !iframe.isConnected) return;
       const shouldMute = wrapper.classList.contains("is-muted");
-      await player.setMuted(shouldMute);
-      if (!shouldMute) await player.setVolume(1);
       requestVideoDuration(wrapper, () => player.getDuration());
-      await player.play();
+      try {
+        await player.setMuted(shouldMute);
+        if (!shouldMute) await player.setVolume(1);
+        await player.play();
+      } catch (err) {
+        // Many WebViews used by APK-wrapper apps block unmuted autoplay
+        // outright and reject play() when sound is requested — that used to
+        // tear the whole player down and show a "tap to start" message even
+        // though the video would have played fine muted. Retry muted before
+        // giving up entirely; the mute button still lets the user turn
+        // sound on right after.
+        if (wrapper._player !== player || !iframe.isConnected) return;
+        try {
+          await player.setMuted(true);
+          await player.play();
+          wrapper.classList.add("is-muted");
+          const muteBtn = videoControlEls(wrapper).muteBtn;
+          if (muteBtn) muteBtn.setAttribute("aria-label", "Unmute video");
+        } catch {
+          retryPlayback();
+        }
+      }
     }).catch(retryPlayback);
     player.on("timeupdate", data => {
       if (data.duration) setVideoDuration(wrapper, data.duration);
@@ -2545,9 +2689,16 @@ function loadVideoFrame(wrapper) {
     ? `&origin=${encodeURIComponent(location.origin)}`
     : "";
   iframe.src = provider === "youtube"
-    ? `${src}${src.includes("?") ? "&" : "?"}enablejsapi=1&autoplay=1&mute=0&playsinline=1&controls=0&disablekb=1&fs=0&rel=0&modestbranding=1${originParam}`
-    : `${src}${src.includes("?") ? "&" : "?"}api=1&autoplay=1&muted=0&playsinline=1&controls=0&title=0&byline=0&portrait=0`;
+    ? `${src}${src.includes("?") ? "&" : "?"}enablejsapi=1&autoplay=1&mute=1&playsinline=1&controls=0&disablekb=1&fs=0&rel=0&modestbranding=1${originParam}`
+    : `${src}${src.includes("?") ? "&" : "?"}api=1&autoplay=1&muted=1&playsinline=1&controls=0&title=0&byline=0&portrait=0`;
   iframe.title = "Video";
+  // Start the embed itself muted=1 regardless of the user's sound
+  // preference — this is the one autoplay mode virtually every WebView
+  // (including APK wrappers) allows unconditionally. The provider's JS API,
+  // attached right below, then explicitly requests sound if the user wants
+  // it, with a muted-retry fallback if that's rejected. Requesting sound
+  // directly in the URL here made the very first frame of playback fail in
+  // stricter WebViews before the JS API had a chance to take over.
   // This iframe is created after a user tap; lazy loading can lose that
   // activation and make Vimeo playback/sound fail on mobile.
   iframe.loading = "eager";
@@ -2660,20 +2811,31 @@ function markPostViewed(postId) {
   if (viewed[postId]) { viewedPostCache.set(postId, true); return; }
   viewed[postId] = now;
   viewedPostCache.set(postId, true);
-  localStorage.setItem(`anirdb_viewed_${currentUser.uid}`, JSON.stringify(viewed));
-  $$(`.post-card[data-post-id="${postId}"] .view-count`).forEach(el => {
-    el.textContent = formatCount((Number(el.dataset.raw || 0) || 0) + 1);
-    el.dataset.raw = String((Number(el.dataset.raw || 0) || 0) + 1);
-  });
+  try { localStorage.setItem(`anirdb_viewed_${currentUser.uid}`, JSON.stringify(viewed)); } catch {}
   const postRef = doc(db, "posts", postId);
   const viewRef = doc(db, "postViews", `${postId}_${currentUser.uid}`);
-  // A local seven-day dedupe avoids repeat reads/writes on refresh. The
-  // deterministic marker also makes the write auditable without a read-first
-  // check on every card; server rules/functions can enforce create-only.
-  const batch = writeBatch(db);
-  batch.set(viewRef, { postId, uid: currentUser.uid, viewedAt: serverTimestamp() }, { merge: true });
-  batch.update(postRef, { viewCount: increment(1) });
-  batch.commit().catch(err => console.warn("AniRDB view update skipped:", err.code, err.message));
+  // The local dedupe cache above is just a fast path to skip a network call
+  // on repeat scrolls in the same session. It is NOT trusted on its own
+  // before writing, because some WebView/APK wrappers reset localStorage on
+  // every app restart — if we only checked local state, every relaunch of
+  // the app would look like a brand-new view for posts the user already
+  // saw, inflating the view count. So before incrementing we always check
+  // the deterministic per-user marker doc in Firestore first; if it already
+  // exists, this view was already counted server-side (local cache was
+  // simply stale/cleared) and we skip both the write and the UI bump.
+  getDoc(viewRef).then(existing => {
+    if (existing.exists()) return null;
+    const batch = writeBatch(db);
+    batch.set(viewRef, { postId, uid: currentUser.uid, viewedAt: serverTimestamp() });
+    batch.update(postRef, { viewCount: increment(1) });
+    return batch.commit().then(() => true);
+  }).then(didIncrement => {
+    if (!didIncrement) return;
+    $$(`.post-card[data-post-id="${postId}"] .view-count`).forEach(el => {
+      el.textContent = formatCount((Number(el.dataset.raw || 0) || 0) + 1);
+      el.dataset.raw = String((Number(el.dataset.raw || 0) || 0) + 1);
+    });
+  }).catch(err => console.warn("AniRDB view update skipped:", err.code, err.message));
 }
 function observePostView(card, postId) {
   if (!("IntersectionObserver" in window)) return;
@@ -3074,7 +3236,15 @@ $("#postMenuDelete").addEventListener("click", async () => {
   // Keep the author's profile post count in sync — but only if this post was
   // ever approved (and therefore counted) in the first place.
   if (deletedAuthorId && wasApproved) {
-    updateDoc(doc(db, "users", deletedAuthorId), { postsCount: increment(-1) }).catch(() => {});
+    // Clamp inside a transaction so this can never push the stored count
+    // negative (a plain increment(-1) has no floor) — mirrors the same fix
+    // applied to subscribersCount.
+    runTransaction(db, async tx => {
+      const authorRef = doc(db, "users", deletedAuthorId);
+      const snap = await tx.get(authorRef);
+      const current = Math.max(0, Number(snap.data()?.postsCount || 0));
+      tx.update(authorRef, { postsCount: Math.max(0, current - 1) });
+    }).catch(() => {});
     if (deletedAuthorId === currentUser.uid) {
       myProfile.postsCount = Math.max(0, (myProfile.postsCount || 0) - 1);
     }
@@ -3802,6 +3972,10 @@ $("#settingsRecent").addEventListener("click", () => {
 });
 $("#savedBack").addEventListener("click", () => { hide($("#savedView")); openSettings(); });
 $("#recentBack").addEventListener("click", () => { hide($("#recentView")); openSettings(); });
+$("#recentClearBtn").addEventListener("click", () => {
+  try { localStorage.removeItem(recentHistoryKey()); } catch {}
+  renderRecentlyViewed();
+});
 $("#settingsInstall").addEventListener("click", async () => {
   if (!deferredInstallPrompt) {
     toast(isStandaloneApp() ? "AniRDB is already installed." : t("pwaInstallHint"));
@@ -3860,9 +4034,9 @@ async function openProfile(uid) {
   $("#profileHandle").textContent = p.handle;
   $("#profileLocation").textContent = p.location ? p.location : "";
   $("#profileBio").textContent = p.bio || "";
-  $("#statPosts").textContent = p.postsCount || 0;
-  $("#statSubscribers").textContent = p.subscribersCount || 0;
-  $("#statSubscribing").textContent = p.subscribingCount || 0;
+  $("#statPosts").textContent = Math.max(0, Number(p.postsCount) || 0);
+  $("#statSubscribers").textContent = Math.max(0, Number(p.subscribersCount) || 0);
+  $("#statSubscribing").textContent = Math.max(0, Number(p.subscribingCount) || 0);
 
   $("#subscribeBtn").style.display = isMe ? "none" : "";
 
