@@ -357,15 +357,18 @@ img{max-width:100%;display:block;}
   background:#fff;border-top:1px solid var(--line);
 }
 .bottomnav #navSubscribeFeed{display:none;}
-.navicon{width:22px;height:22px;color:var(--ink-soft);cursor:pointer;}
+.navicon{width:22px;height:22px;color:var(--ink-soft);cursor:pointer;flex:none;}
 .navicon.active{color:var(--ink);}
 .navbtn{background:none;border:none;padding:6px;display:flex;cursor:pointer;}
+.navlabel{display:none;}
 .createbtn{
   width:44px;height:44px;border-radius:50%;
   background:var(--ink);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
   box-shadow:0 4px 10px -3px rgba(18,33,29,.4);border:none;
 }
+.createbtn .navlabel{display:none;}
+.sidebar-brand{display:none;}
 
 /* gender picker (signup) */
 .genderpick{display:flex;gap:10px;}
@@ -526,6 +529,8 @@ img{max-width:100%;display:block;}
   #appScreen.app{
     max-width:1180px;
     min-height:100vh;
+    margin-left:264px;
+    margin-right:auto;
     box-shadow:0 0 38px rgba(10,15,13,.1);
   }
   #appScreen .topbar{padding:22px 40px 10px;}
@@ -556,11 +561,39 @@ img{max-width:100%;display:block;}
     margin-right:auto;
   }
   #appScreen .settings-group{max-width:760px;margin-left:auto;margin-right:auto;}
-  #appScreen .bottomnav{
-    max-width:1180px;
-    padding-left:40px;
-    padding-right:40px;
+  /* Facebook/YouTube-style desktop nav: the mobile bottom tab bar becomes a
+     fixed left sidebar with labels, pinned to the actual browser viewport
+     (not the centered content card), so it behaves like a real desktop app
+     shell instead of just a wider version of the phone layout. */
+  .bottomnav{
+    position:fixed;left:0;top:0;bottom:auto;transform:none;
+    width:240px;max-width:240px;height:100vh;
+    flex-direction:column;align-items:stretch;justify-content:flex-start;
+    gap:2px;
+    padding:22px 14px;
+    border-top:none;border-right:1px solid var(--line);
+    background:#fff;z-index:60;
   }
+  .sidebar-brand{
+    display:flex;align-items:center;gap:7px;font-weight:700;font-size:17px;
+    padding:6px 10px 20px;color:var(--ink);
+  }
+  .sidebar-brand span{color:var(--accent-dark);}
+  .sidebar-brand .beta-tag{color:#fff;}
+  .bottomnav #navSubscribeFeed{display:flex;}
+  .navlabel{display:inline-block;font-size:14.5px;font-weight:600;white-space:nowrap;}
+  .navbtn{
+    flex-direction:row;align-items:center;gap:14px;
+    width:100%;padding:12px 12px;border-radius:12px;color:var(--ink-soft);
+  }
+  .navbtn:hover{background:#f2f4f3;}
+  .navbtn.navactive{background:#e3f9f0;color:var(--accent-dark);}
+  .navbtn.navactive .navicon{color:var(--accent-dark);}
+  .createbtn{
+    width:100%;height:auto;border-radius:24px;flex-direction:row;gap:8px;
+    padding:12px 16px;margin:8px 0 16px;
+  }
+  .createbtn .navlabel{display:inline-block;color:#fff;}
   /* Full-page sheets (compose, edit profile, notifications, premium, search)
      stretch edge-to-edge by design for phones. On a wide desktop window that
      reads as a giant blank form, so present them as a centered floating card
@@ -820,11 +853,14 @@ img{max-width:100%;display:block;}
 
   <!-- BOTTOM NAV -->
   <div class="bottomnav">
+    <div class="sidebar-brand">AniRDB <span class="beta-tag">Beta</span></div>
     <button class="navbtn" id="navHome" aria-label="Home">
       <svg class="navicon active" viewBox="0 0 24 24" fill="none"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      <span class="navlabel" data-i18n="navLabelHome">Home</span>
     </button>
     <button class="navbtn" id="navSearch" aria-label="Search">
       <svg class="navicon" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-4.3-4.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="navlabel" data-i18n="navLabelSearch">Search</span>
     </button>
     <button class="navbtn" id="navSubscribeFeed" aria-label="Following">
       <svg class="navicon" viewBox="0 0 24 24" fill="none">
@@ -833,15 +869,19 @@ img{max-width:100%;display:block;}
         <circle cx="17" cy="7.5" r="2.4" stroke="currentColor" stroke-width="1.5"/>
         <path d="M14.6 13.3c2.6.5 4.1 2.4 4.1 5.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
+      <span class="navlabel" data-i18n="navLabelSubscriptions">Subscriptions</span>
     </button>
     <button class="navbtn" id="navSettings" aria-label="Settings">
       <svg class="navicon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 01-1.51 1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <span class="navlabel" data-i18n="navLabelSettings">Settings</span>
     </button>
     <button class="navbtn" id="navProfile" aria-label="Profile">
       <svg class="navicon" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke="currentColor" stroke-width="1.7"/></svg>
+      <span class="navlabel" data-i18n="navLabelProfile">Profile</span>
     </button>
     <button class="createbtn" id="navCreate" aria-label="New Post">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span class="navlabel" data-i18n="navLabelCreate">New Post</span>
     </button>
   </div>
 </div>
@@ -1350,6 +1390,7 @@ const I18N = {
      tabDiscover: "Discover", tabFollowing: "Subscriptions", tabMovies: "Movies", tabSeries: "Series",
       recentPosts: "Recent Posts", filterLabel: "Filter", filterAll: "All", filterVideo: "Video", filterImage: "Image", filterPopular: "Popular", filterSaved: "Saved", filterUnread: "Unread",
      menuRecent: "Recently viewed", recentTitle: "Recently viewed", clearRecent: "Clear",
+     navLabelHome: "Home", navLabelSearch: "Search", navLabelSubscriptions: "Subscriptions", navLabelSettings: "Settings", navLabelProfile: "Profile", navLabelCreate: "New Post",
      cropSquareLabel: "Crop photos to square", cropSquareHint: "Photos are compressed before upload",
     btnEdit: "Edit", btnSave: "Save",
     statPosts: "Posts", statSubscribers: "Subscribers", statFollowing: "Subscribing",
@@ -1444,6 +1485,7 @@ const I18N = {
      tabDiscover: "ডিসকভার", tabFollowing: "সাবস্ক্রাইব ফিড", tabMovies: "মুভি", tabSeries: "সিরিজ",
       recentPosts: "সাম্প্রতিক পোস্ট", filterLabel: "ফিল্টার", filterAll: "সব", filterVideo: "ভিডিও", filterImage: "ছবি", filterPopular: "জনপ্রিয়", filterSaved: "সেভ করা", filterUnread: "না-পড়া",
      menuRecent: "সাম্প্রতিক দেখা", recentTitle: "সাম্প্রতিক দেখা", clearRecent: "মুছুন",
+     navLabelHome: "হোম", navLabelSearch: "খুঁজুন", navLabelSubscriptions: "সাবস্ক্রিপশন", navLabelSettings: "সেটিংস", navLabelProfile: "প্রোফাইল", navLabelCreate: "নতুন পোস্ট",
      cropSquareLabel: "ছবি স্কোয়ার করে কাটুন", cropSquareHint: "আপলোডের আগে ছবি compress হবে",
     btnEdit: "সম্পাদনা", btnSave: "সংরক্ষণ করুন",
     statPosts: "পোস্ট", statSubscribers: "সাবস্ক্রাইবার", statFollowing: "সাবস্ক্রাইবিং",
